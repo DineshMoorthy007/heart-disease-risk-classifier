@@ -47,6 +47,7 @@ venv.bak/
 .vscode/
 .idea/
 
-# OS generated files
-.DS_Store
-Thumbs.db
+# Testing caches
+.pytest_cache/
+.coverage
+htmlcov/

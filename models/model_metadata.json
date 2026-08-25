@@ -1,7 +1,7 @@
 {
   "model_name": "Tuned Decision Tree Classifier",
   "model_version": "1.0.0",
-  "timestamp_utc": "2026-08-25T08:34:00.172299+00:00",
+  "timestamp_utc": "2026-08-25T08:47:34.732283+00:00",
   "random_state": 42,
   "test_size": 0.2,
   "cv_folds": 5,

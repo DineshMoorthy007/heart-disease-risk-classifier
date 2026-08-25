@@ -10,6 +10,8 @@ Interactive Streamlit application implementing:
   5. Risk Prediction: Real-time patient risk assessment with clinical input validation & explanation
 """
 
+from __future__ import annotations
+
 import json
 import logging
 import sys
@@ -50,7 +52,6 @@ logger = logging.getLogger(__name__)
 # -----------------------------------------------------------------------------
 st.set_page_config(
     page_title="CardioRisk Analytics | Heart Disease Risk Classifier",
-    page_icon="🫀",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -64,36 +65,37 @@ st.markdown(
     /* Metric Card Styling */
     .metric-card {
         background-color: #f8f9fa;
-        border: 1px solid #e9ecef;
+        border: 1px solid #dee2e6;
         border-radius: 8px;
         padding: 16px;
         text-align: center;
         box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
     .metric-title {
-        font-size: 0.85rem;
+        font-size: 0.82rem;
         font-weight: 600;
-        color: #6c757d;
+        color: #495057;
         text-transform: uppercase;
+        letter-spacing: 0.5px;
         margin-bottom: 4px;
     }
     .metric-value {
-        font-size: 1.6rem;
+        font-size: 1.55rem;
         font-weight: 700;
         color: #1e3a8a;
     }
     .metric-sub {
         font-size: 0.75rem;
-        color: #495057;
+        color: #6c757d;
         margin-top: 4px;
     }
 
     /* Pipeline Step Box */
     .pipeline-step {
         background-color: #ffffff;
-        border-left: 4px solid #2b5c8f;
-        padding: 10px 14px;
-        margin-bottom: 8px;
+        border-left: 4px solid #1e3a8a;
+        padding: 12px 16px;
+        margin-bottom: 10px;
         border-radius: 0 6px 6px 0;
         box-shadow: 0 1px 2px rgba(0,0,0,0.04);
     }
@@ -101,21 +103,21 @@ st.markdown(
     /* Risk Badges */
     .risk-badge-low {
         background-color: #e8f5e9;
-        color: #2e7d32;
-        border: 1px solid #a5d6a7;
-        padding: 12px 18px;
+        color: #1b5e20;
+        border: 1px solid #81c784;
+        padding: 14px 20px;
         border-radius: 8px;
-        font-size: 1.25rem;
+        font-size: 1.2rem;
         font-weight: 700;
         text-align: center;
     }
     .risk-badge-high {
         background-color: #ffebee;
-        color: #c62828;
-        border: 1px solid #ef9a9a;
-        padding: 12px 18px;
+        color: #b71c1c;
+        border: 1px solid #e57373;
+        padding: 14px 20px;
         border-radius: 8px;
-        font-size: 1.25rem;
+        font-size: 1.2rem;
         font-weight: 700;
         text-align: center;
     }
@@ -123,12 +125,23 @@ st.markdown(
     /* Educational Disclaimer Banner */
     .disclaimer-box {
         background-color: #fff9db;
-        border-left: 4px solid #f59f00;
+        border-left: 4px solid #d97706;
         padding: 12px 16px;
         border-radius: 0 6px 6px 0;
         font-size: 0.82rem;
         color: #495057;
         margin-top: 14px;
+    }
+
+    .badge-tag {
+        display: inline-block;
+        padding: 3px 8px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        border-radius: 4px;
+        background-color: #e2e8f0;
+        color: #334155;
+        margin-right: 6px;
     }
     </style>
     """,
@@ -214,47 +227,52 @@ def get_figure_path(filename: str) -> Optional[Path]:
 
 
 # -----------------------------------------------------------------------------
-# Sidebar
+# Sidebar Navigation
 # -----------------------------------------------------------------------------
 def render_sidebar():
-    """Render the application sidebar with navigation and project details."""
+    """Render the application sidebar with clean, professional navigation."""
     with st.sidebar:
-        st.markdown("## 🫀 CardioRisk Analytics")
+        st.markdown("### CardioRisk Analytics")
         st.caption("Heart Disease Risk Prediction System")
         st.markdown("---")
 
         page = st.radio(
-            "Navigation Menu",
+            "Navigation",
             [
-                "🏠 Home",
-                "📊 Dataset Overview",
-                "📈 Healthcare Analytics",
-                "🎯 Model Performance",
-                "🩺 Risk Prediction",
+                "Home",
+                "Dataset Overview",
+                "Healthcare Analytics",
+                "Model Performance",
+                "Risk Prediction",
             ],
             index=0,
         )
 
         st.markdown("---")
-        st.markdown("### 🛠️ Technology Stack")
+        st.markdown("#### Technical Specifications")
         st.markdown(
             """
-            - **Core:** Python 3.14
-            - **Analytics:** Pandas, NumPy, SciPy
-            - **Machine Learning:** Scikit-Learn
-            - **Visualizations:** Matplotlib, Seaborn
-            - **Interface:** Streamlit
+            * **Core Runtime:** Python 3.14
+            * **ML Library:** Scikit-Learn
+            * **Data Processing:** Pandas, NumPy
+            * **Analytical Charts:** Matplotlib, Seaborn
+            * **Framework:** Streamlit
             """
         )
 
-        st.markdown("### 📋 Primary Model")
-        st.info("🌳 **Tuned Decision Tree Classifier**\n- Max Depth: 3\n- Gini Criterion (Balanced)\n- Strict White-Box Explainability")
+        st.markdown("#### Selected Primary Model")
+        st.info(
+            "**Tuned Decision Tree Classifier**\n\n"
+            "- Depth: 3 (8 Leaf Nodes)\n"
+            "- Criterion: Gini Impurity (Balanced)\n"
+            "- Architecture: 100% White-Box Explainability"
+        )
 
         st.markdown("---")
         st.markdown(
             f"""
             <div class="disclaimer-box">
-            <strong>Medical Notice:</strong> {MEDICAL_DISCLAIMER}
+            <strong>Educational Notice:</strong> {MEDICAL_DISCLAIMER}
             </div>
             """,
             unsafe_allow_html=True,
@@ -270,7 +288,7 @@ def render_home_page(df: pd.DataFrame, meta: Dict[str, Any], sel_report: Dict[st
     """Render the Home overview page with dynamic metrics and methodology."""
     st.title("Heart Disease Risk Prediction Using Decision Tree-Based Healthcare Analytics")
     st.markdown(
-        "##### An academic healthcare analytics & explainable machine-learning system for cardiovascular risk classification."
+        "##### An academic healthcare analytics and explainable machine-learning system for cardiovascular risk classification."
     )
     st.markdown("---")
 
@@ -280,8 +298,6 @@ def render_home_page(df: pd.DataFrame, meta: Dict[str, Any], sel_report: Dict[st
     final_metrics = sel_report.get("final_test_metrics", {})
     test_acc = final_metrics.get("accuracy", 0.8689)
     test_recall = final_metrics.get("recall", 0.8571)
-    test_f1 = final_metrics.get("f1_score", 0.8571)
-    model_name = sel_report.get("selected_model", "Tuned Decision Tree")
 
     col1, col2, col3, col4, col5 = st.columns(5)
     with col1:
@@ -346,22 +362,22 @@ def render_home_page(df: pd.DataFrame, meta: Dict[str, Any], sel_report: Dict[st
     left_col, right_col = st.columns([3, 2])
 
     with left_col:
-        st.subheader("📌 Project Overview & Objectives")
+        st.subheader("Project Overview & Clinical Motivation")
         st.markdown(
             """
             This application provides an interactive decision-support interface developed for healthcare analytics.
             Unlike black-box algorithms whose internal logic is opaque, this project prioritizes **clinical explainability**
             via a tuned **Decision Tree Classifier**, enabling clinicians and students to inspect exact decision pathways.
 
-            **Key Analytical Dimensions:**
-            - **Demographic Factors:** Patient age and biological sex distributions.
-            - **Symptom Presentations:** Chest pain classification (typical, atypical, non-anginal, asymptomatic).
-            - **Physiological Stress Markers:** Resting blood pressure, serum cholesterol, peak heart rate achieved, exercise-induced ST depression.
-            - **Diagnostic Imaging:** Fluoroscopic coronary vessel calcification (`ca`) and thallium scintigraphy defect status (`thal`).
+            **Clinical Dimensions Evaluated:**
+            * **Demographics:** Patient chronological age and biological sex distributions.
+            * **Symptom Presentations:** Chest pain classification (typical angina, atypical angina, non-anginal pain, asymptomatic).
+            * **Physiological Stress Markers:** Resting blood pressure, serum cholesterol, peak heart rate achieved, exercise-induced ST depression.
+            * **Diagnostic Imaging:** Fluoroscopic coronary vessel calcification (`ca`) and thallium scintigraphy defect status (`thal`).
             """
         )
 
-        st.subheader("🔄 End-to-End Methodology Pipeline")
+        st.subheader("End-to-End Methodology Pipeline")
         steps = [
             ("1. Data Preprocessing & Validation", "Handling UTF-8 BOM encoding, schema validation, zero data leakage separation."),
             ("2. Exploratory Healthcare Analytics", "Cohort statistical profiling, correlation heatmaps, diagnostic marker comparisons."),
@@ -381,13 +397,13 @@ def render_home_page(df: pd.DataFrame, meta: Dict[str, Any], sel_report: Dict[st
             )
 
     with right_col:
-        st.subheader("🎯 Primary Model Architecture")
+        st.subheader("Primary Model Architecture")
         dt_fig = get_figure_path("final_decision_tree.png")
         if dt_fig:
             st.image(str(dt_fig), caption="Tuned Decision Tree Structure (Max Depth = 3)", use_container_width=True)
 
         st.info(
-            "💡 **White-Box Explainability:** Every node in the decision tree represents an interpretable clinical threshold, "
+            "**White-Box Explainability:** Every node in the decision tree represents an interpretable clinical threshold, "
             "allowing full verification of why a patient is categorized as higher or lower risk."
         )
 
@@ -397,7 +413,7 @@ def render_home_page(df: pd.DataFrame, meta: Dict[str, Any], sel_report: Dict[st
 # -----------------------------------------------------------------------------
 def render_dataset_page(df: pd.DataFrame):
     """Render the Dataset Overview page with provenance, schema, and data table."""
-    st.title("📊 Dataset Overview & Clinical Taxonomy")
+    st.title("Dataset Overview & Clinical Taxonomy")
     st.markdown("Comprehensive inspection of the Cleveland Heart Disease database.")
     st.markdown("---")
 
@@ -452,7 +468,7 @@ def render_dataset_page(df: pd.DataFrame):
     ]
     st.dataframe(pd.DataFrame(taxonomy_data), use_container_width=True, hide_index=True)
 
-    with st.expander("🔍 Inspect Processed Dataset (All 303 Records)", expanded=False):
+    with st.expander("Inspect Processed Dataset (All 303 Records)", expanded=False):
         st.dataframe(df, use_container_width=True)
         st.caption("Displaying cleaned, standardized dataset from `data/processed/heart_disease_processed.csv`.")
 
@@ -462,13 +478,13 @@ def render_dataset_page(df: pd.DataFrame):
 # -----------------------------------------------------------------------------
 def render_analytics_page(df: pd.DataFrame):
     """Render the Healthcare Analytics page with interactive filters and EDA charts."""
-    st.title("📈 Healthcare Analytics & Exploratory Insights")
+    st.title("Healthcare Analytics & Exploratory Insights")
     st.markdown("Analytical visualizations exploring clinical risk correlations across demographic and physiological dimensions.")
     st.markdown("---")
 
     # Interactive Cohort Filter Bar
     with st.container():
-        st.markdown("#### 🔬 Cohort Filter Controls")
+        st.markdown("#### Cohort Filter Controls")
         f_col1, f_col2, f_col3 = st.columns(3)
 
         min_age, max_age = int(df["age"].min()), int(df["age"].max())
@@ -496,10 +512,10 @@ def render_analytics_page(df: pd.DataFrame):
 
     # Analytics Sub-Sections using Tabs
     tab1, tab2, tab3, tab4 = st.tabs([
-        "👥 Demographics & Chest Pain",
-        "🩸 Physiological Biomarkers",
-        "🏃 Exercise Stress & Imaging",
-        "🔥 Correlation Matrix & Ranking",
+        "Demographics & Chest Pain",
+        "Physiological Biomarkers",
+        "Exercise Stress & Imaging",
+        "Correlation Matrix & Ranking",
     ])
 
     with tab1:
@@ -604,7 +620,7 @@ def render_analytics_page(df: pd.DataFrame):
 # -----------------------------------------------------------------------------
 def render_performance_page(comp_df: pd.DataFrame, cv_df: pd.DataFrame, sel_report: Dict[str, Any]):
     """Render the Model Performance & Evaluation page."""
-    st.title("🎯 Machine Learning Model Performance & Evaluation")
+    st.title("Machine Learning Model Performance & Evaluation")
     st.markdown("Comparative evaluation across 4 classification algorithms and deep-dive analysis of the final Decision Tree model.")
     st.markdown("---")
 
@@ -673,7 +689,7 @@ def render_performance_page(comp_df: pd.DataFrame, cv_df: pd.DataFrame, sel_repo
         if final_fi:
             st.image(str(final_fi), caption="Gini Feature Importance Reduction Ranking", use_container_width=True)
         st.caption(
-            "⚠️ **Methodological Note:** Feature importance measures how influential an attribute was in reducing impurity "
+            "**Methodological Note:** Feature importance measures how influential an attribute was in reducing impurity "
             "within this statistical model; it does not establish medical causality."
         )
 
@@ -683,12 +699,12 @@ def render_performance_page(comp_df: pd.DataFrame, cv_df: pd.DataFrame, sel_repo
 # -----------------------------------------------------------------------------
 def render_prediction_page():
     """Render the interactive Patient Risk Prediction interface."""
-    st.title("🩺 Interactive Patient Heart Disease Risk Prediction")
+    st.title("Interactive Patient Heart Disease Risk Prediction")
     st.markdown("Enter patient clinical attributes below to assess estimated cardiovascular risk using the trained Decision Tree pipeline.")
     st.markdown("---")
 
     # Preset Patient Profiles for Fast Demonstration
-    st.markdown("#### ⚡ Quick Demonstration Presets")
+    st.markdown("#### Demonstration Presets")
     col_pre1, col_pre2, col_pre3 = st.columns(3)
 
     if "profile" not in st.session_state:
@@ -708,7 +724,7 @@ def render_prediction_page():
             "thal": 1,
         }
 
-    if col_pre1.button("👤 Load Low-Risk Profile Preset", use_container_width=True):
+    if col_pre1.button("Load Low-Risk Profile Preset", use_container_width=True):
         st.session_state.profile = {
             "age": 42,
             "sex": 0,
@@ -726,7 +742,7 @@ def render_prediction_page():
         }
         st.rerun()
 
-    if col_pre2.button("⚠️ Load High-Risk Profile Preset", use_container_width=True):
+    if col_pre2.button("Load High-Risk Profile Preset", use_container_width=True):
         st.session_state.profile = {
             "age": 62,
             "sex": 1,
@@ -744,7 +760,7 @@ def render_prediction_page():
         }
         st.rerun()
 
-    if col_pre3.button("🔄 Reset to Default Values", use_container_width=True):
+    if col_pre3.button("Reset to Default Values", use_container_width=True):
         st.session_state.profile = {
             "age": 55,
             "sex": 1,
@@ -768,7 +784,7 @@ def render_prediction_page():
 
     # Input Form
     with st.form("risk_prediction_form"):
-        st.markdown("### 📋 Clinical Parameter Entry Form")
+        st.markdown("### Clinical Parameter Entry Form")
 
         c1, c2, c3 = st.columns(3)
 
@@ -882,7 +898,7 @@ def render_prediction_page():
             thal = int(thal_label.split(":")[0])
 
         st.markdown("<br>", unsafe_allow_html=True)
-        submit_button = st.form_submit_button("🔍 Run Heart Disease Risk Assessment", type="primary", use_container_width=True)
+        submit_button = st.form_submit_button("Run Heart Disease Risk Assessment", type="primary", use_container_width=True)
 
     # Process Prediction upon Submit
     if submit_button:
@@ -907,19 +923,18 @@ def render_prediction_page():
             result = predict_risk(patient_dict, model=pipeline)
 
             st.markdown("---")
-            st.subheader("🎯 Model Risk Assessment Results")
+            st.subheader("Model Risk Assessment Results")
 
             r_col1, r_col2 = st.columns([1.2, 1])
 
             with r_col1:
                 is_high_risk = result["prediction"] == 1
                 badge_class = "risk-badge-high" if is_high_risk else "risk-badge-low"
-                badge_icon = "⚠️" if is_high_risk else "✅"
 
                 st.markdown(
                     f"""
                     <div class="{badge_class}">
-                        {badge_icon} Model Assessment: {result['predicted_category']}
+                        Model Assessment: {result['predicted_category']}
                     </div>
                     """,
                     unsafe_allow_html=True,
@@ -933,15 +948,15 @@ def render_prediction_page():
                 st.markdown(f"**Classification Confidence Score:** `{result['confidence_score']:.1%}`")
 
             with r_col2:
-                st.markdown("##### 🔍 Identified Contributing Clinical Factors")
+                st.markdown("##### Identified Contributing Clinical Factors")
                 factors = result.get("contributing_clinical_factors", [])
                 if factors:
                     for f in factors:
-                        st.markdown(f"- 🔸 **{f}**")
+                        st.markdown(f"* **{f}**")
                 else:
                     st.markdown("No severe clinical risk markers triggered in this patient profile.")
 
-            with st.expander("📋 Review Submitted Clinical Feature Values", expanded=False):
+            with st.expander("Review Submitted Clinical Feature Values", expanded=False):
                 st.json(result["input_features"])
 
             st.markdown(
@@ -977,15 +992,15 @@ def main():
     selected_page = render_sidebar()
 
     # Route to Selected Page
-    if selected_page == "🏠 Home":
+    if selected_page == "Home":
         render_home_page(df, meta, sel_report)
-    elif selected_page == "📊 Dataset Overview":
+    elif selected_page == "Dataset Overview":
         render_dataset_page(df)
-    elif selected_page == "📈 Healthcare Analytics":
+    elif selected_page == "Healthcare Analytics":
         render_analytics_page(df)
-    elif selected_page == "🎯 Model Performance":
+    elif selected_page == "Model Performance":
         render_performance_page(comp_df, cv_df, sel_report)
-    elif selected_page == "🩺 Risk Prediction":
+    elif selected_page == "Risk Prediction":
         render_prediction_page()
 
 

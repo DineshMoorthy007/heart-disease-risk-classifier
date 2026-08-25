@@ -153,3 +153,62 @@ def test_predict_batch(low_risk_patient, high_risk_patient):
     assert "heart_disease_probability" in output_df.columns
     assert output_df.loc[0, "predicted_risk_class"] in [0, 1]
     assert output_df.loc[1, "predicted_risk_class"] in [0, 1]
+
+
+def test_boundary_valid_values(low_risk_patient):
+    """Test patient profiles with exact boundary values."""
+    # Test lower boundaries
+    min_patient = low_risk_patient.copy()
+    min_patient.update({
+        "age": 18,
+        "trestbps": 80,
+        "chol": 100,
+        "thalach": 60,
+        "oldpeak": 0.0,
+    })
+    res_min = predict_risk(min_patient)
+    assert res_min["prediction"] in [0, 1]
+
+    # Test upper boundaries
+    max_patient = low_risk_patient.copy()
+    max_patient.update({
+        "age": 100,
+        "trestbps": 220,
+        "chol": 600,
+        "thalach": 220,
+        "oldpeak": 8.0,
+    })
+    res_max = predict_risk(max_patient)
+    assert res_max["prediction"] in [0, 1]
+
+
+def test_boundary_invalid_values(low_risk_patient):
+    """Test that out-of-boundary values raise validation exceptions."""
+    # Under minimum age
+    under_age = low_risk_patient.copy()
+    under_age["age"] = 17
+    with pytest.raises(ValueError, match="below the supported model validation limit"):
+        validate_patient_input(under_age)
+
+    # Over maximum age
+    over_age = low_risk_patient.copy()
+    over_age["age"] = 101
+    with pytest.raises(ValueError, match="exceeds the supported model validation limit"):
+        validate_patient_input(over_age)
+
+    # Negative oldpeak
+    neg_oldpeak = low_risk_patient.copy()
+    neg_oldpeak["oldpeak"] = -0.5
+    with pytest.raises(ValueError, match="below the supported model validation limit"):
+        validate_patient_input(neg_oldpeak)
+
+
+def test_deterministic_prediction_repeatability(high_risk_patient):
+    """Test that repeated calls with identical input produce identical predictions."""
+    res1 = predict_risk(high_risk_patient)
+    res2 = predict_risk(high_risk_patient)
+    res3 = predict_risk(high_risk_patient)
+
+    assert res1["prediction"] == res2["prediction"] == res3["prediction"]
+    assert res1["heart_disease_probability"] == res2["heart_disease_probability"] == res3["heart_disease_probability"]
+    assert res1["confidence_score"] == res2["confidence_score"] == res3["confidence_score"]
