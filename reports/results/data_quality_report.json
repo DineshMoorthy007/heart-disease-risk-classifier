@@ -1,0 +1,205 @@
+{
+  "dataset_name": "Cleveland Heart Disease Dataset (UCI)",
+  "timestamp_utc": "2026-08-25T07:54:22.539035+00:00",
+  "summary": {
+    "raw_row_count": 303,
+    "raw_column_count": 14,
+    "processed_row_count": 303,
+    "processed_column_count": 14,
+    "columns": [
+      "age",
+      "sex",
+      "cp",
+      "trestbps",
+      "chol",
+      "fbs",
+      "restecg",
+      "thalach",
+      "exang",
+      "oldpeak",
+      "slope",
+      "ca",
+      "thal",
+      "target"
+    ]
+  },
+  "data_hygiene": {
+    "initial_row_count": 303,
+    "duplicates_detected": 0,
+    "duplicates_removed": 0,
+    "missing_values_detected": 0,
+    "missing_per_column": {
+      "age": 0,
+      "sex": 0,
+      "cp": 0,
+      "trestbps": 0,
+      "chol": 0,
+      "fbs": 0,
+      "restecg": 0,
+      "thalach": 0,
+      "exang": 0,
+      "oldpeak": 0,
+      "slope": 0,
+      "ca": 0,
+      "thal": 0,
+      "target": 0
+    },
+    "imputed_columns": {},
+    "cleaned_row_count": 303
+  },
+  "target_analysis": {
+    "target_classes": [
+      0,
+      1
+    ],
+    "class_labels": {
+      "0": "No Heart Disease (Absence)",
+      "1": "Heart Disease Present (Presence)"
+    },
+    "counts": {
+      "no_disease_0": 164,
+      "disease_1": 139
+    },
+    "percentages": {
+      "no_disease_0_pct": 54.13,
+      "disease_1_pct": 45.87
+    },
+    "total_records": 303
+  },
+  "feature_taxonomy": {
+    "all_features": [
+      "age",
+      "sex",
+      "cp",
+      "trestbps",
+      "chol",
+      "fbs",
+      "restecg",
+      "thalach",
+      "exang",
+      "oldpeak",
+      "slope",
+      "ca",
+      "thal"
+    ],
+    "numerical_features": [
+      "age",
+      "trestbps",
+      "chol",
+      "thalach",
+      "oldpeak"
+    ],
+    "categorical_features": [
+      "sex",
+      "cp",
+      "fbs",
+      "restecg",
+      "exang",
+      "slope",
+      "ca",
+      "thal"
+    ],
+    "binary_features": [
+      "sex",
+      "fbs",
+      "exang"
+    ],
+    "multiclass_categorical_features": [
+      "cp",
+      "restecg",
+      "slope",
+      "ca",
+      "thal"
+    ],
+    "target": [
+      "target"
+    ]
+  },
+  "column_ranges": {
+    "age": {
+      "dtype": "int64",
+      "min": 29.0,
+      "max": 77.0,
+      "unique_count": 41
+    },
+    "sex": {
+      "dtype": "int64",
+      "min": 0.0,
+      "max": 1.0,
+      "unique_count": 2
+    },
+    "cp": {
+      "dtype": "int64",
+      "min": 0.0,
+      "max": 3.0,
+      "unique_count": 4
+    },
+    "trestbps": {
+      "dtype": "int64",
+      "min": 94.0,
+      "max": 200.0,
+      "unique_count": 50
+    },
+    "chol": {
+      "dtype": "int64",
+      "min": 126.0,
+      "max": 564.0,
+      "unique_count": 152
+    },
+    "fbs": {
+      "dtype": "int64",
+      "min": 0.0,
+      "max": 1.0,
+      "unique_count": 2
+    },
+    "restecg": {
+      "dtype": "int64",
+      "min": 0.0,
+      "max": 2.0,
+      "unique_count": 3
+    },
+    "thalach": {
+      "dtype": "int64",
+      "min": 71.0,
+      "max": 202.0,
+      "unique_count": 91
+    },
+    "exang": {
+      "dtype": "int64",
+      "min": 0.0,
+      "max": 1.0,
+      "unique_count": 2
+    },
+    "oldpeak": {
+      "dtype": "float64",
+      "min": 0.0,
+      "max": 6.2,
+      "unique_count": 40
+    },
+    "slope": {
+      "dtype": "int64",
+      "min": 0.0,
+      "max": 2.0,
+      "unique_count": 3
+    },
+    "ca": {
+      "dtype": "int64",
+      "min": 0.0,
+      "max": 3.0,
+      "unique_count": 4
+    },
+    "thal": {
+      "dtype": "int64",
+      "min": 1.0,
+      "max": 3.0,
+      "unique_count": 3
+    },
+    "target": {
+      "dtype": "int64",
+      "min": 0.0,
+      "max": 1.0,
+      "unique_count": 2
+    }
+  },
+  "data_leakage_prevented": true
+}
