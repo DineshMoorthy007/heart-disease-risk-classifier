@@ -1,6 +1,6 @@
 {
   "dataset": "Cleveland Heart Disease Dataset (UCI)",
-  "timestamp_utc": "2026-08-25T08:15:00.117192+00:00",
+  "timestamp_utc": "2026-08-25T08:34:00.170807+00:00",
   "selected_model": "Decision Tree Classifier (Tuned)",
   "selection_rationale": "Selected as the primary project model due to its strict white-box interpretability, direct translation into clinical diagnostic rules, robust feature importance alignment, and strong balanced test performance (81.97% Accuracy, 82.14% Recall, 82.14% F1, 0.8874 ROC-AUC).",
   "selected_hyperparameters": {
