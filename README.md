@@ -40,24 +40,32 @@ heart-disease-risk-classifier/
 │   ├── data_preprocessing.py             # Phase 2: Modular preprocessing pipeline
 │   ├── exploratory_analysis.py           # Phase 3: Analytical visualizations
 │   ├── train_model.py                    # Phase 4: Model training routines
-│   ├── evaluate_model.py                 # Phase 5: Metrics & explainability
+│   ├── evaluate_model.py                 # Phase 4 & 5: Metrics & explainability
 │   └── prediction.py                     # Phase 6: Prediction inference pipeline
 │
 ├── models/
-│   ├── decision_tree_model.pkl
+│   ├── decision_tree_model.joblib        # Phase 4: Trained baseline pipelines
+│   ├── logistic_regression_model.joblib
+│   ├── random_forest_model.joblib
+│   ├── knn_model.joblib
 │   └── model_metadata.json
 │
 ├── app/
 │   └── app.py                            # Phase 7: Streamlit dashboard
 │
 ├── reports/
-│   ├── figures/                          # Phase 3: 14 publication-quality EDA charts
+│   ├── figures/                          # EDA and ML evaluation charts (21 figures)
 │   └── results/
-│       └── data_quality_report.json      # Preprocessing data hygiene report
+│       ├── data_quality_report.json
+│       ├── model_comparison.csv
+│       ├── cross_validation_results.csv
+│       └── decision_tree_feature_importance.csv
 │
 ├── tests/
-│   ├── test_data_preprocessing.py        # Unit tests for preprocessing
-│   └── test_exploratory_analysis.py      # Unit tests for exploratory analysis
+│   ├── test_data_preprocessing.py
+│   ├── test_exploratory_analysis.py
+│   ├── test_model_training.py
+│   └── test_model_evaluation.py
 │
 ├── requirements.txt
 ├── README.md
@@ -96,25 +104,39 @@ The exploratory analysis module (`src/exploratory_analysis.py`) and notebook (`n
   - **Thalassemia (`thal`):** Reversible defect status (`thal=3`) had a 76.07% heart disease rate ($r = 0.516$).
 * **Outlier Assessment:** IQR analysis detected clinically valid extreme physiological values (e.g. resting BP up to 200 mm Hg, cholesterol up to 564 mg/dl, oldpeak up to 6.2 mm), all representing severe cardiac cases rather than data entry anomalies.
 
-### Generated Visualizations (`reports/figures/`):
-1. `target_distribution.png` — Target class distribution
-2. `age_distribution.png` — Overall patient age histogram & KDE
-3. `age_by_target.png` — Age distribution by diagnostic class
-4. `heart_disease_by_sex.png` — Prevalence by biological sex
-5. `chest_pain_by_target.png` — Chest pain presentation vs diagnosis
-6. `blood_pressure_by_target.png` — Resting blood pressure boxplot
-7. `cholesterol_by_target.png` — Serum cholesterol boxplot
-8. `max_heart_rate_by_target.png` — Peak heart rate achieved boxplot
-9. `exercise_angina_by_target.png` — Exercise-induced angina count plot
-10. `st_depression_by_target.png` — ST depression (oldpeak) boxplot
-11. `vessels_ca_by_target.png` — Fluoroscopy major vessels vs diagnosis
-12. `thalassemia_by_target.png` — Thalassemia status vs diagnosis
-13. `correlation_heatmap.png` — Pearson correlation matrix heatmap
-14. `feature_target_summary.png` — Ranked linear correlation with target
+---
+
+## 6. Machine Learning Model Development & Benchmarking (Phase 4)
+
+The modeling pipeline (`src/train_model.py`) evaluates 4 classification architectures using an untouched 20% test split ($N=61$) and 5-Fold Stratified Cross-Validation ($N=242$):
+
+### Evaluation Strategy:
+* **Stratified Split:** 80% Train ($N=242$), 20% Test ($N=61$, 33 class 0, 28 class 1).
+* **Leakage-Free Pipelines:** One-hot encoding on categorical features; standard scaling for distance/linear models (Logistic Regression, KNN); untouched numerical features for tree models.
+* **Primary Algorithm:** **Decision Tree Classifier** (`max_depth=4`, `min_samples_leaf=3`, `min_samples_split=6`), prioritized for clinical interpretability and transparent decision logic.
+* **Comparative Baselines:** Logistic Regression (linear baseline), Random Forest (ensemble baseline), and K-Nearest Neighbors (distance-based baseline).
+
+### Benchmark Comparison (Untouched Test Set):
+
+| Model | Accuracy | Precision | Recall (Sensitivity) | F1-Score | ROC-AUC | 5-Fold CV Accuracy |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Logistic Regression** | **0.8852** | 0.8387 | **0.9286** | **0.8814** | **0.9665** | $0.8471 \pm 0.0100$ |
+| **KNN ($k=5$)** | **0.8852** | **0.8621** | 0.8929 | 0.8772 | 0.9529 | $0.8222 \pm 0.0288$ |
+| **Random Forest** | 0.8525 | 0.8065 | 0.8929 | 0.8475 | 0.9567 | $0.8096 \pm 0.0321$ |
+| **Decision Tree (Primary)** | 0.7869 | 0.7586 | 0.7857 | 0.7719 | 0.8755 | $0.7357 \pm 0.0342$ |
+
+### Decision Tree Feature Importance:
+1. `thal_1` (Normal Thalassemia Status): **45.0%**
+2. `cp_3` (Asymptomatic Chest Pain): **16.3%**
+3. `ca_0` (Zero Fluoroscopy Vessels): **14.1%**
+4. `chol` (Serum Cholesterol): **7.2%**
+5. `oldpeak` (ST Depression): **5.6%**
+6. `sex_1` (Male): **3.2%**
+7. `thalach` (Maximum Heart Rate): **3.0%**
 
 ---
 
-## 6. Installation & Setup
+## 7. Installation & Setup
 
 1. **Activate Virtual Environment:**
    ```bash
@@ -139,13 +161,18 @@ The exploratory analysis module (`src/exploratory_analysis.py`) and notebook (`n
    python -m src.exploratory_analysis
    ```
 
-5. **Run Tests:**
+5. **Train & Evaluate Machine Learning Models:**
+   ```bash
+   python -m src.train_model
+   ```
+
+6. **Run Test Suite:**
    ```bash
    pytest tests/
    ```
 
 ---
 
-## 7. Medical Disclaimer
+## 8. Medical Disclaimer
 
 > **IMPORTANT:** This prediction system is generated by a machine-learning model for **educational and analytical purposes only**. It is **not a medical diagnosis** and must not be used as a substitute for professional medical advice, clinical evaluation, or treatment decisions.

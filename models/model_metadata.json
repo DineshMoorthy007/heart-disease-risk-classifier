@@ -1,0 +1,103 @@
+{
+  "timestamp_utc": "2026-08-25T08:07:41.681044+00:00",
+  "random_state": 42,
+  "test_size": 0.2,
+  "cv_folds": 5,
+  "train_records": 242,
+  "test_records": 61,
+  "class_distribution_train": {
+    "0": 131,
+    "1": 111
+  },
+  "class_distribution_test": {
+    "0": 33,
+    "1": 28
+  },
+  "test_metrics": {
+    "Logistic Regression": {
+      "accuracy": 0.8852,
+      "precision": 0.8387,
+      "recall": 0.9286,
+      "f1_score": 0.8814,
+      "roc_auc": 0.9665
+    },
+    "Decision Tree": {
+      "accuracy": 0.7869,
+      "precision": 0.7586,
+      "recall": 0.7857,
+      "f1_score": 0.7719,
+      "roc_auc": 0.8755
+    },
+    "Random Forest": {
+      "accuracy": 0.8525,
+      "precision": 0.8065,
+      "recall": 0.8929,
+      "f1_score": 0.8475,
+      "roc_auc": 0.9567
+    },
+    "KNN": {
+      "accuracy": 0.8852,
+      "precision": 0.8621,
+      "recall": 0.8929,
+      "f1_score": 0.8772,
+      "roc_auc": 0.9529
+    }
+  },
+  "feature_names_transformed": [
+    "age",
+    "trestbps",
+    "chol",
+    "thalach",
+    "oldpeak",
+    "sex_0",
+    "sex_1",
+    "cp_0",
+    "cp_1",
+    "cp_2",
+    "cp_3",
+    "fbs_0",
+    "fbs_1",
+    "restecg_0",
+    "restecg_1",
+    "restecg_2",
+    "exang_0",
+    "exang_1",
+    "slope_0",
+    "slope_1",
+    "slope_2",
+    "ca_0",
+    "ca_1",
+    "ca_2",
+    "ca_3",
+    "thal_1",
+    "thal_2",
+    "thal_3"
+  ],
+  "decision_tree_properties": {
+    "max_depth": 4,
+    "n_leaves": 16,
+    "criterion": "gini",
+    "top_features": [
+      {
+        "feature": "thal_1",
+        "importance": 0.4497507336341388
+      },
+      {
+        "feature": "cp_3",
+        "importance": 0.16261899112318753
+      },
+      {
+        "feature": "ca_0",
+        "importance": 0.1413706212946251
+      },
+      {
+        "feature": "chol",
+        "importance": 0.07199940888087095
+      },
+      {
+        "feature": "oldpeak",
+        "importance": 0.05599875210784438
+      }
+    ]
+  }
+}
