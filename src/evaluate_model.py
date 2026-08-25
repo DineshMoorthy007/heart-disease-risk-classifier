@@ -29,6 +29,7 @@ from sklearn.metrics import (
     precision_score,
     recall_score,
     roc_auc_score,
+    roc_curve,
 )
 from sklearn.tree import plot_tree
 
@@ -342,3 +343,52 @@ def compute_and_plot_feature_importance(
     plt.close()
 
     return fi_df, output_path
+
+
+def plot_roc_curve(
+    y_true: Union[pd.Series, np.ndarray],
+    y_prob: Union[pd.Series, np.ndarray],
+    model_name: str = "Tuned Decision Tree",
+    output_path: Optional[Path] = None,
+) -> Tuple[float, Optional[Path]]:
+    """
+    Plot and save the Receiver Operating Characteristic (ROC) curve with AUC score.
+
+    Args:
+        y_true: True binary target labels.
+        y_prob: Predicted probability for the positive class (Class 1).
+        model_name: Model label for title and legend.
+        output_path: Destination image path.
+
+    Returns:
+        Tuple of (ROC-AUC score, saved output path).
+    """
+    set_plot_theme()
+    fpr, tpr, thresholds = roc_curve(y_true, y_prob)
+    auc_score = roc_auc_score(y_true, y_prob)
+
+    fig, ax = plt.subplots(figsize=(7, 6))
+    ax.plot(
+        fpr,
+        tpr,
+        color="#d9534f",
+        lw=2.5,
+        label=f"{model_name} (AUC = {auc_score:.4f})",
+    )
+    ax.plot([0, 1], [0, 1], color="navy", lw=1.5, linestyle="--", label="Random Chance (AUC = 0.50)")
+
+    ax.set_xlim([0.0, 1.0])
+    ax.set_ylim([0.0, 1.05])
+    ax.set_xlabel("False Positive Rate (1 - Specificity)", labelpad=10, fontweight="bold")
+    ax.set_ylabel("True Positive Rate (Sensitivity / Recall)", labelpad=10, fontweight="bold")
+    ax.set_title(f"Receiver Operating Characteristic (ROC) Curve - {model_name}", pad=15, fontweight="bold")
+    ax.legend(loc="lower right", frameon=True)
+    plt.tight_layout()
+
+    if output_path:
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        plt.savefig(output_path, dpi=300, bbox_inches="tight")
+        logger.info(f"Saved ROC curve to: {output_path}")
+    plt.close()
+
+    return float(auc_score), output_path
